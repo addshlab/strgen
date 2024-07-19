@@ -7,11 +7,13 @@
 </head>
 <body>
     <h1>生成された値</h1>
+    <button id="regenerateButton">再生成</button>
     <p><strong>UUIDv4:</strong> <span id="uuidv4"></span></p>
     <p><strong>UUIDv7:</strong> <span id="uuidv7"></span></p>
     <p><strong>12文字のランダム文字列:</strong> <span id="random12"></span></p>
     <p><strong>16文字のランダム文字列:</strong> <span id="random16"></span></p>
     <p><strong>32文字のランダム文字列:</strong> <span id="random32"></span></p>
+
 
     <script>
         // UUIDv4の生成
@@ -41,14 +43,20 @@
             return result;
         }
 
-        // ページが読み込まれたときに値を生成して表示
-        window.onload = function() {
+        // 値を更新する関数
+        function updateValues() {
             document.getElementById('uuidv4').textContent = generateUUIDv4();
             document.getElementById('uuidv7').textContent = generateUUIDv7();
             document.getElementById('random12').textContent = generateRandomString(12);
             document.getElementById('random16').textContent = generateRandomString(16);
             document.getElementById('random32').textContent = generateRandomString(32);
         }
+
+        // ページが読み込まれたときに値を初期表示
+        window.onload = updateValues;
+
+        // ボタンがクリックされたときに値を再生成
+        document.getElementById('regenerateButton').addEventListener('click', updateValues);
     </script>
 </body>
 </html>
