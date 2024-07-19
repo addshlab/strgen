@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UUIDおよびランダム文字列生成</title>
+</head>
+<body>
+    <h1>生成された値</h1>
+    <p><strong>UUIDv4:</strong> <span id="uuidv4"></span></p>
+    <p><strong>UUIDv7:</strong> <span id="uuidv7"></span></p>
+    <p><strong>12文字のランダム文字列:</strong> <span id="random12"></span></p>
+    <p><strong>16文字のランダム文字列:</strong> <span id="random16"></span></p>
+    <p><strong>32文字のランダム文字列:</strong> <span id="random32"></span></p>
+
+    <script>
+        // UUIDv4の生成
+        function generateUUIDv4() {
+            return crypto.randomUUID();
+        }
+
+        // UUIDv7の生成
+        function generateUUIDv7() {
+            return 'tttttttt-tttt-7xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.trunc(Math.random() * 16);
+                const v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            }).replace(/^[t]{8}-[t]{4}/, function() {
+                const unixtimestamp = Date.now().toString(16).padStart(12, '0');
+                return unixtimestamp.slice(0, 8) + '-' + unixtimestamp.slice(8);
+            });
+        }
+
+        // 指定された文字数のランダム文字列生成
+        function generateRandomString(length) {
+            const chars = '^$*.[]{}()?!@#%&:;_~1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // ページが読み込まれたときに値を生成して表示
+        window.onload = function() {
+            document.getElementById('uuidv4').textContent = generateUUIDv4();
+            document.getElementById('uuidv7').textContent = generateUUIDv7();
+            document.getElementById('random12').textContent = generateRandomString(12);
+            document.getElementById('random16').textContent = generateRandomString(16);
+            document.getElementById('random32').textContent = generateRandomString(32);
+        }
+    </script>
+</body>
+</html>
