@@ -4,43 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UUIDおよびランダム文字列生成</title>
-    <script src="https://cdn.jsdelivr.net/npm/@zxcvbn-ts/core@2.0.0/dist/zxcvbn-ts.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@zxcvbn-ts/language-common@2.0.0/dist/zxcvbn-ts.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@zxcvbn-ts/language-en@2.0.0/dist/zxcvbn-ts.js"></script>
     <style>
-        .strength-meter {
-            display: flex;
-            align-items: center;
-        }
-        .strength-bar {
-            height: 10px;
-            width: 100px;
-            margin-right: 10px;
+        .copy-button {
+            margin-left: 10px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
             border-radius: 5px;
-            background: #ddd;
+            font-size: 0.9em;
         }
-        .strength-bar span {
-            display: block;
-            height: 100%;
+        .copy-button:hover {
+            background-color: #45a049;
+        }
+        #notification {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
             border-radius: 5px;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
     <h1>生成された値</h1>
     <button id="regenerateButton">再生成</button>
-    <p><strong>UUIDv4:</strong> <span id="uuidv4"></span></p>
-    <p><strong>UUIDv7:</strong> <span id="uuidv7"></span></p>
+    <p><strong>UUIDv4:</strong> <span id="uuidv4"></span> <button class="copy-button" data-target="uuidv4">コピー</button></p>
+    <p><strong>UUIDv7:</strong> <span id="uuidv7"></span> <button class="copy-button" data-target="uuidv7">コピー</button></p>
     <h2>記号+数字+アルファベット</h2>
-    <p><strong>12文字のランダム文字列:</strong> <span id="random12_symbols_numbers_alphabets"></span></p>
-    <p><strong>16文字のランダム文字列:</strong> <span id="random16_symbols_numbers_alphabets"></span></p>
-    <p><strong>32文字のランダム文字列:</strong> <span id="random32_symbols_numbers_alphabets"></span></p>
+    <p><strong>12文字のランダム文字列:</strong> <span id="random12_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random12_symbols_numbers_alphabets">コピー</button></p>
+    <p><strong>16文字のランダム文字列:</strong> <span id="random16_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random16_symbols_numbers_alphabets">コピー</button></p>
+    <p><strong>32文字のランダム文字列:</strong> <span id="random32_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random32_symbols_numbers_alphabets">コピー</button></p>
     <h2>数字+アルファベット</h2>
-    <p><strong>12文字のランダム文字列:</strong> <span id="random12_numbers_alphabets"></span></p>
-    <p><strong>16文字のランダム文字列:</strong> <span id="random16_numbers_alphabets"></span></p>
-    <p><strong>32文字のランダム文字列:</strong> <span id="random32_numbers_alphabets"></span></p>
+    <p><strong>12文字のランダム文字列:</strong> <span id="random12_numbers_alphabets"></span> <button class="copy-button" data-target="random12_numbers_alphabets">コピー</button></p>
+    <p><strong>16文字のランダム文字列:</strong> <span id="random16_numbers_alphabets"></span> <button class="copy-button" data-target="random16_numbers_alphabets">コピー</button></p>
+    <p><strong>32文字のランダム文字列:</strong> <span id="random32_numbers_alphabets"></span> <button class="copy-button" data-target="random32_numbers_alphabets">コピー</button></p>
+    <div id="notification"></div>
     <script>
-
         const symbols = '^$*.[]{}()?!@#%&:;_~';
         const numbers = '1234567890';
         const alphabets = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -71,8 +77,7 @@
             return result;
         }
 
-
-        // 値を更新する関数		
+        // 値を更新する関数
         function updateValues() {
             document.getElementById('uuidv4').textContent = generateUUIDv4();
             document.getElementById('uuidv7').textContent = generateUUIDv7();
@@ -83,6 +88,34 @@
             document.getElementById('random16_numbers_alphabets').textContent = generateRandomString(16, numbers + alphabets);
             document.getElementById('random32_numbers_alphabets').textContent = generateRandomString(32, numbers + alphabets);
         }
+
+        // クリップボードにコピーする関数
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('コピーしました!');
+            }, (err) => {
+                showNotification('コピーに失敗しました: ' + err);
+            });
+        }
+
+        // 通知メッセージを表示する関数
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        }
+
+        // コピーボタンのクリックイベントを設定
+        document.querySelectorAll('.copy-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const text = document.getElementById(targetId).textContent;
+                copyToClipboard(text);
+            });
+        });
 
         // ページが読み込まれたときに値を初期表示
         window.onload = updateValues;
