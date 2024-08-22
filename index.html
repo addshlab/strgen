@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UUIDおよびランダム文字列生成</title>
     <style>
+        body {
+            font-family: monospace;
+        }
+        h2 {
+            font-size: 110%;
+            color:darkred;
+        }
         .copy-button {
             margin-left: 10px;
             cursor: pointer;
@@ -43,18 +50,22 @@
     </style>
 </head>
 <body>
-    <h1>生成された値</h1>
-    <button id="regenerateButton">再生成</button>
-    <p><strong>UUIDv4:</strong> <span id="uuidv4"></span> <button class="copy-button" data-target="uuidv4">copy</button></p>
-    <p><strong>UUIDv7:</strong> <span id="uuidv7"></span> <button class="copy-button" data-target="uuidv7">copy</button></p>
-    <h2>記号+数字+アルファベット</h2>
-    <p><strong>12char:</strong> <span id="random12_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random12_symbols_numbers_alphabets">copy</button></p>
-    <p><strong>16char:</strong> <span id="random16_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random16_symbols_numbers_alphabets">copy</button></p>
-    <p><strong>32char:</strong> <span id="random32_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random32_symbols_numbers_alphabets">copy</button></p>
-    <h2>数字+アルファベット</h2>
-    <p><strong>12char:</strong> <span id="random12_numbers_alphabets"></span> <button class="copy-button" data-target="random12_numbers_alphabets">copy</button></p>
-    <p><strong>16char:</strong> <span id="random16_numbers_alphabets"></span> <button class="copy-button" data-target="random16_numbers_alphabets">copy</button></p>
-    <p><strong>32char:</strong> <span id="random32_numbers_alphabets"></span> <button class="copy-button" data-target="random32_numbers_alphabets">copy</button></p>
+    <h1>String Generator</h1>
+    <button id="regenerateButton">Generate</button>
+    <h2>Datetime</h2>
+    <p>Local: <span id="localTime"></span> <button class="copy-button" data-target="localTime">copy</button></p>
+    <p>UTC: <span id="utcTime"></span> <button class="copy-button" data-target="utcTime">copy</button></p>
+    <h2>UUID</h2>
+    <p>UUIDv4: <span id="uuidv4"></span> <button class="copy-button" data-target="uuidv4">copy</button></p>
+    <p>UUIDv7: <span id="uuidv7"></span> <button class="copy-button" data-target="uuidv7">copy</button></p>
+    <h2>Symbol+Number+Alphabet</h2>
+    <p>12char: <span id="random12_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random12_symbols_numbers_alphabets">copy</button></p>
+    <p>16char: <span id="random16_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random16_symbols_numbers_alphabets">copy</button></p>
+    <p>32char: <span id="random32_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random32_symbols_numbers_alphabets">copy</button></p>
+    <h2>Number+Alphabet</h2>
+    <p>12char: <span id="random12_numbers_alphabets"></span> <button class="copy-button" data-target="random12_numbers_alphabets">copy</button></p>
+    <p>16char: <span id="random16_numbers_alphabets"></span> <button class="copy-button" data-target="random16_numbers_alphabets">copy</button></p>
+    <p>32char: <span id="random32_numbers_alphabets"></span> <button class="copy-button" data-target="random32_numbers_alphabets">copy</button></p>
     <div id="notification"></div>
     <script>
         const symbols = '^$*.[]{}()?!@#%&:;_~';
@@ -87,6 +98,28 @@
             return result;
         }
 
+        // 現在の時刻を取得する関数
+function getCurrentTime() {
+    const now = new Date();
+    const offset = -now.getTimezoneOffset();
+    const sign = offset >= 0 ? "+" : "-";
+    const pad = (num) => String(num).padStart(2, '0');
+    const localOffset = sign + pad(Math.floor(Math.abs(offset) / 60)) + ":" + pad(Math.abs(offset) % 60);
+    
+    // ローカル時間を正しく取得
+    const localTime = now.getFullYear() + '-' +
+                      pad(now.getMonth() + 1) + '-' +
+                      pad(now.getDate()) + 'T' +
+                      pad(now.getHours()) + ':' +
+                      pad(now.getMinutes()) + ':' +
+                      pad(now.getSeconds()) + localOffset;
+    
+    // UTC時間はそのままtoISOStringを使用
+    const utcTime = now.toISOString().slice(0, 19) + "Z";
+    
+    return { localTime, utcTime };
+}
+
         // 値を更新する関数
         function updateValues() {
             document.getElementById('uuidv4').textContent = generateUUIDv4();
@@ -97,7 +130,14 @@
             document.getElementById('random12_numbers_alphabets').textContent = generateRandomString(12, numbers + alphabets);
             document.getElementById('random16_numbers_alphabets').textContent = generateRandomString(16, numbers + alphabets);
             document.getElementById('random32_numbers_alphabets').textContent = generateRandomString(32, numbers + alphabets);
+            
+            const { localTime, utcTime } = getCurrentTime();
+            document.getElementById('localTime').textContent = localTime;
+            document.getElementById('utcTime').textContent = utcTime;
         }
+
+        // ページが読み込まれたときに値を初期表示
+        window.addEventListener('load', updateValues);
 
         // クリップボードにコピーする関数
         function copyToClipboard(text) {
@@ -126,9 +166,6 @@
                 copyToClipboard(text);
             });
         });
-
-        // ページが読み込まれたときに値を初期表示
-        window.onload = updateValues;
 
         // ボタンがクリックされたときに値を再生成
         document.getElementById('regenerateButton').addEventListener('click', updateValues);
