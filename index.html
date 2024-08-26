@@ -57,7 +57,7 @@
     <p>UTC: <span id="utcTime"></span> <button class="copy-button" data-target="utcTime">copy</button></p>
     <h2>UUID</h2>
     <p>UUIDv4: <span id="uuidv4"></span> <button class="copy-button" data-target="uuidv4">copy</button></p>
-    <p>UUIDv7: <span id="uuidv7"></span> <button class="copy-button" data-target="uuidv7">copy</button></p>
+    <p>UUIDv7: <span id="uuidv7"></span> <button class="copy-button" data-target="uuidv7">copy</button> <span id="uuidv7_validate"></span></p>
     <h2>Symbol+Number+Alphabet</h2>
     <p>12char: <span id="random12_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random12_symbols_numbers_alphabets">copy</button></p>
     <p>16char: <span id="random16_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random16_symbols_numbers_alphabets">copy</button></p>
@@ -66,6 +66,8 @@
     <p>12char: <span id="random12_numbers_alphabets"></span> <button class="copy-button" data-target="random12_numbers_alphabets">copy</button></p>
     <p>16char: <span id="random16_numbers_alphabets"></span> <button class="copy-button" data-target="random16_numbers_alphabets">copy</button></p>
     <p>32char: <span id="random32_numbers_alphabets"></span> <button class="copy-button" data-target="random32_numbers_alphabets">copy</button></p>
+    <h2>Emoji</h2>
+    <p>12char: <span id="random12_emojis"></span> <button class="copy-button" data-target="random12_emojis">copy</button></p>
     <div id="notification"></div>
     <script>
         const symbols = '^$*.[]{}()?!@#%&:;_~';
@@ -88,6 +90,61 @@
                 return unixtimestamp.slice(0, 8) + '-' + unixtimestamp.slice(8);
             });
         }
+        
+        function uuidv7ToISO8601(uuidv7) {
+            // UUIDv7のタイムスタンプ部分（最初の12桁）を抽出
+            const timestampHex = uuidv7.slice(0, 8) + uuidv7.slice(9, 13);
+            // 16進数を10進数に変換し、ミリ秒単位のUnixタイムスタンプにする
+            const timestamp = parseInt(timestampHex, 16);
+            // ISO 8601 (UTC) 形式に変換
+            const date = new Date(timestamp);
+            return date.toISOString();
+        }
+
+        // X文字のemojiを抽出
+        function getRandomEmojis(count) {
+            const emojiRanges = [
+                [0x1F600, 0x1F64F], // Emoticons
+              //  [0x1F300, 0x1F5FF], // Misc Symbols and Pictographs
+              //  [0x1F680, 0x1F6FF] // Transport and Map Symbols
+              //  [0x1F700, 0x1F77F], // Alchemical Symbols
+              //  [0x1F780, 0x1F7FF], // Geometric Shapes Extended
+              //  [0x1F800, 0x1F8FF], // Supplemental Arrows-C
+              //  [0x1F900, 0x1F9FF], // Supplemental Symbols and Pictographs
+              //  [0x1FA00, 0x1FA6F], // Chess Symbols
+              //  [0x1FA70, 0x1FAFF], // Symbols and Pictographs Extended-A
+              //  [0x2600, 0x26FF],   // Misc Symbols
+              //  [0x2700, 0x27BF],   // Dingbats
+              //  [0x2300, 0x23FF],   // Misc Technical
+              //  [0x2B50, 0x2B55],   // Misc Symbols and Arrows
+              //  [0x23E9, 0x23EF],   // Misc Technical
+              //  [0x23F0],           // Alarm Clock
+              //  [0x23F3],           // Hourglass
+              //  [0x1F004],          // Mahjong Tile Red Dragon
+              //  [0x1F0CF],          // Playing Card Black Joker
+              //  [0x2934, 0x2935],   // Arrows
+              //  [0x2B05, 0x2B07],   // Arrows
+              //  [0x3297],           // Circled Ideograph Congratulation
+              //  [0x3299],            // Circled Ideograph Secret
+            ];
+
+            const emojis = [];
+
+            for (let i = 0; i < count; i++) {
+                // ランダムに範囲を選択
+                const range = emojiRanges[Math.floor(Math.random() * emojiRanges.length)];
+                
+                // 範囲の中からランダムに1つのコードポイントを選択
+                const codePoint = range.length === 2
+                    ? Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0]
+                    : range[0];
+
+                // 絵文字に変換して追加
+                emojis.push(String.fromCodePoint(codePoint));
+            }
+
+            return emojis.join('');
+        }
 
         // 指定された文字数のランダム文字列生成
         function generateRandomString(length, chars = symbols + numbers + alphabets) {
@@ -99,37 +156,39 @@
         }
 
         // 現在の時刻を取得する関数
-function getCurrentTime() {
-    const now = new Date();
-    const offset = -now.getTimezoneOffset();
-    const sign = offset >= 0 ? "+" : "-";
-    const pad = (num) => String(num).padStart(2, '0');
-    const localOffset = sign + pad(Math.floor(Math.abs(offset) / 60)) + ":" + pad(Math.abs(offset) % 60);
-    
-    // ローカル時間を正しく取得
-    const localTime = now.getFullYear() + '-' +
-                      pad(now.getMonth() + 1) + '-' +
-                      pad(now.getDate()) + 'T' +
-                      pad(now.getHours()) + ':' +
-                      pad(now.getMinutes()) + ':' +
-                      pad(now.getSeconds()) + localOffset;
-    
-    // UTC時間はそのままtoISOStringを使用
-    const utcTime = now.toISOString().slice(0, 19) + "Z";
-    
-    return { localTime, utcTime };
-}
+        function getCurrentTime() {
+            const now = new Date();
+            const offset = -now.getTimezoneOffset();
+            const sign = offset >= 0 ? "+" : "-";
+            const pad = (num) => String(num).padStart(2, '0');
+            const localOffset = sign + pad(Math.floor(Math.abs(offset) / 60)) + ":" + pad(Math.abs(offset) % 60);
+            
+            // ローカル時間を正しく取得
+            const localTime = now.getFullYear() + '-' +
+                              pad(now.getMonth() + 1) + '-' +
+                              pad(now.getDate()) + 'T' +
+                              pad(now.getHours()) + ':' +
+                              pad(now.getMinutes()) + ':' +
+                              pad(now.getSeconds()) + localOffset;
+            
+            // UTC時間はそのままtoISOStringを使用
+            const utcTime = now.toISOString().slice(0, 19) + "Z";
+            
+            return { localTime, utcTime };
+        }
 
         // 値を更新する関数
         function updateValues() {
             document.getElementById('uuidv4').textContent = generateUUIDv4();
             document.getElementById('uuidv7').textContent = generateUUIDv7();
+            document.getElementById('uuidv7_validate').textContent = uuidv7ToISO8601(generateUUIDv7());
             document.getElementById('random12_symbols_numbers_alphabets').textContent = generateRandomString(12);
             document.getElementById('random16_symbols_numbers_alphabets').textContent = generateRandomString(16);
             document.getElementById('random32_symbols_numbers_alphabets').textContent = generateRandomString(32);
             document.getElementById('random12_numbers_alphabets').textContent = generateRandomString(12, numbers + alphabets);
             document.getElementById('random16_numbers_alphabets').textContent = generateRandomString(16, numbers + alphabets);
             document.getElementById('random32_numbers_alphabets').textContent = generateRandomString(32, numbers + alphabets);
+            document.getElementById('random12_emojis').textContent = getRandomEmojis(12);
             
             const { localTime, utcTime } = getCurrentTime();
             document.getElementById('localTime').textContent = localTime;
