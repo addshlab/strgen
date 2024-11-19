@@ -39,21 +39,26 @@
             border-radius: 5px;
             z-index: 1000;
         }
-		strong {
-		   font-family: monospace;
-		}
-		span {
-		   font-family: monospace;
-		   font-size: 12px;
-		}
-		button {
-		   font-family: monospace;
-		}
+        strong {
+            font-family: monospace;
+        }
+	p {
+	    margin: 5px;
+	    padding: 0;
+	}
+        span {
+            font-family: monospace;
+            font-size: 12px;
+        }
+        button {
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
 <div id="app">
-    <h1>String Generator</h1>
+    <h1>文字列ジェネレータ</h1>
+    <p>ここで生成される文字列はお使いのブラウザで生成されています。これらの値がサーバーに残ったり、どこかに送信されることはありません。</p>
     <button id="regenerateButton">Generate</button>
     <h2>Datetime</h2>
     <p>Local: <span id="localTime"></span> <button class="copy-button" data-target="localTime">copy</button></p>
