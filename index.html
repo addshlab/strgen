@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UUIDおよびランダム文字列生成</title>
+    <title>文字列ジェネレータ</title>
     <style>
         body {
-            font-family: monospace;
+	    margin:0;
+	    padding:0;
         }
+	#app{margin:10px;}
         h2 {
             font-size: 110%;
             color:darkred;
@@ -50,6 +52,7 @@
     </style>
 </head>
 <body>
+<div id="app">
     <h1>String Generator</h1>
     <button id="regenerateButton">Generate</button>
     <h2>Datetime</h2>
@@ -71,6 +74,7 @@
     <h2>Front Matter</h2>
     <pre id="generatedMetadata"></pre> <button class="copy-button" data-target="generatedMetadata">copy</button>
     <div id="notification"></div>
+</div>
     <script>
         const symbols = '^$*.[]{}()?!@#%&:;_~';
         const numbers = '1234567890';
