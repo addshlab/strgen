@@ -6,13 +6,13 @@
     <title>文字列ジェネレータ</title>
     <style>
         body {
-	    margin:0;
-	    padding:0;
+            margin: 0;
+            padding: 0;
         }
-	#app{margin:10px;}
+        #app { margin: 10px; }
         h2 {
             font-size: 110%;
-            color:darkred;
+            color: darkred;
         }
         .copy-button {
             margin-left: 10px;
@@ -42,10 +42,10 @@
         strong {
             font-family: monospace;
         }
-	p {
-	    margin: 5px;
-	    padding: 0;
-	}
+        p {
+            margin: 5px;
+            padding: 0;
+        }
         span {
             font-family: monospace;
             font-size: 12px;
@@ -63,6 +63,7 @@
     <h2>Datetime</h2>
     <p>Local: <span id="localTime"></span> <button class="copy-button" data-target="localTime">copy</button></p>
     <p>UTC: <span id="utcTime"></span> <button class="copy-button" data-target="utcTime">copy</button></p>
+        <p>日本: <span id="japanTime"></span> <button class="copy-button" data-target="japanTime">copy</button></p>
     <h2>UUID</h2>
     <p>UUIDv4: <span id="uuidv4"></span> <button class="copy-button" data-target="uuidv4">copy</button></p>
     <p>UUIDv7: <span id="uuidv7"></span> <button class="copy-button" data-target="uuidv7">copy</button> <span id="uuidv7_validate"></span></p>
@@ -81,63 +82,37 @@
     <div id="notification"></div>
 </div>
     <script>
-        const symbols = '^$*.[]{}()?!@#%&:;_~';
-        const numbers = '1234567890';
-        const alphabets = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        function getJapaneseEraDate() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', era: 'long' };
+            return new Intl.DateTimeFormat('ja-JP-u-ca-japanese', options).format(now);
+        }
 
-        // UUIDv4の生成
+        function updateJapaneseTime() {
+            const japanTime = getJapaneseEraDate();
+            document.getElementById('japanTime').textContent = japanTime;
+        }
+
         function generateUUIDv4() {
             return crypto.randomUUID();
         }
 
-        // UUIDv7の生成
         function generateUUIDv7() {
-            return 'tttttttt-tttt-7xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                const r = Math.trunc(Math.random() * 16);
-                const v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return 'xxxxxxxx-xxxx-7xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
-            }).replace(/^[t]{8}-[t]{4}/, function() {
-                const unixtimestamp = Date.now().toString(16).padStart(12, '0');
-                return unixtimestamp.slice(0, 8) + '-' + unixtimestamp.slice(8);
             });
         }
-        
+
         function uuidv7ToISO8601(uuidv7) {
-            // UUIDv7のタイムスタンプ部分（最初の12桁）を抽出
             const timestampHex = uuidv7.slice(0, 8) + uuidv7.slice(9, 13);
-            // 16進数を10進数に変換し、ミリ秒単位のUnixタイムスタンプにする
             const timestamp = parseInt(timestampHex, 16);
-            // ISO 8601 (UTC) 形式に変換
             const date = new Date(timestamp);
             return date.toISOString();
         }
 
-        // X文字のemojiを抽出
-        function getRandomEmojis(count) {
-            const emojiRanges = [
-                [0x1F600, 0x1F64F] // Emoticons
-            ];
-
-            const emojis = [];
-
-            for (let i = 0; i < count; i++) {
-                // ランダムに範囲を選択
-                const range = emojiRanges[Math.floor(Math.random() * emojiRanges.length)];
-                
-                // 範囲の中からランダムに1つのコードポイントを選択
-                const codePoint = range.length === 2
-                    ? Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0]
-                    : range[0];
-
-                // 絵文字に変換して追加
-                emojis.push(String.fromCodePoint(codePoint));
-            }
-
-            return emojis.join('');
-        }
-
-        // 指定された文字数のランダム文字列生成
-        function generateRandomString(length, chars = symbols + numbers + alphabets) {
+        function generateRandomString(length, chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') {
             let result = '';
             for (let i = 0; i < length; i++) {
                 result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -145,30 +120,41 @@
             return result;
         }
 
-        // 現在の時刻を取得する関数
+        function getRandomEmojis(count) {
+            const emojiRanges = [[0x1F600, 0x1F64F]];
+            const emojis = [];
+
+            for (let i = 0; i < count; i++) {
+                const range = emojiRanges[Math.floor(Math.random() * emojiRanges.length)];
+                const codePoint = Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
+                emojis.push(String.fromCodePoint(codePoint));
+            }
+
+            return emojis.join('');
+        }
+
         function getCurrentTime() {
             const now = new Date();
             const offset = -now.getTimezoneOffset();
             const sign = offset >= 0 ? "+" : "-";
             const pad = (num) => String(num).padStart(2, '0');
             const localOffset = sign + pad(Math.floor(Math.abs(offset) / 60)) + ":" + pad(Math.abs(offset) % 60);
-            
-            // ローカル時間を正しく取得
+
             const localTime = now.getFullYear() + '-' +
                               pad(now.getMonth() + 1) + '-' +
                               pad(now.getDate()) + 'T' +
                               pad(now.getHours()) + ':' +
                               pad(now.getMinutes()) + ':' +
                               pad(now.getSeconds()) + localOffset;
-            
-            // UTC時間はそのままtoISOStringを使用
+
             const utcTime = now.toISOString().slice(0, 19) + "Z";
-            
+
             return { localTime, utcTime };
         }
 
-        // 値を更新する関数
         function updateValues() {
+            updateJapaneseTime();
+
             const uuidv7 = generateUUIDv7();
             document.getElementById('uuidv4').textContent = generateUUIDv4();
             document.getElementById('uuidv7').textContent = uuidv7;
@@ -176,24 +162,21 @@
             document.getElementById('random12_symbols_numbers_alphabets').textContent = generateRandomString(12);
             document.getElementById('random16_symbols_numbers_alphabets').textContent = generateRandomString(16);
             document.getElementById('random32_symbols_numbers_alphabets').textContent = generateRandomString(32);
-            document.getElementById('random12_numbers_alphabets').textContent = generateRandomString(12, numbers + alphabets);
-            document.getElementById('random16_numbers_alphabets').textContent = generateRandomString(16, numbers + alphabets);
-            document.getElementById('random32_numbers_alphabets').textContent = generateRandomString(32, numbers + alphabets);
+            document.getElementById('random12_numbers_alphabets').textContent = generateRandomString(12);
+            document.getElementById('random16_numbers_alphabets').textContent = generateRandomString(16);
+            document.getElementById('random32_numbers_alphabets').textContent = generateRandomString(32);
             document.getElementById('random12_emojis').textContent = getRandomEmojis(12);
-            
+
             const { localTime, utcTime } = getCurrentTime();
             document.getElementById('localTime').textContent = localTime;
             document.getElementById('utcTime').textContent = utcTime;
 
-            // Metadataの生成のアップデート
             const metadata = `---\ntitle:\nslug: ${uuidv7}\ndate: ${localTime}\ndraft: true\n---`;
             document.getElementById('generatedMetadata').textContent = metadata;
         }
 
-        // ページが読み込まれたときに値を初期表示
         window.addEventListener('load', updateValues);
 
-        // クリップボードにコピーする関数
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
                 showNotification('コピーしました!');
@@ -202,7 +185,6 @@
             });
         }
 
-        // 通知メッセージを表示する関数
         function showNotification(message) {
             const notification = document.getElementById('notification');
             notification.textContent = message;
@@ -212,7 +194,6 @@
             }, 2000);
         }
 
-        // コピーボタンのクリックイベントを設定
         document.querySelectorAll('.copy-button').forEach(button => {
             button.addEventListener('click', function() {
                 const targetId = this.getAttribute('data-target');
@@ -221,7 +202,6 @@
             });
         });
 
-        // ボタンがクリックされたときに値を再生成
         document.getElementById('regenerateButton').addEventListener('click', updateValues);
     </script>
 </body>
