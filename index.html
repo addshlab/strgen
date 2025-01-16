@@ -97,20 +97,18 @@
             return crypto.randomUUID();
         }
 
-        function generateUUIDv7() {
-            return 'xxxxxxxx-xxxx-7xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                const r = Math.random() * 16 | 0;
-                const v = c === 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        }
-
-        function uuidv7ToISO8601(uuidv7) {
-            const timestampHex = uuidv7.slice(0, 8) + uuidv7.slice(9, 13);
-            const timestamp = parseInt(timestampHex, 16);
-            const date = new Date(timestamp);
-            return date.toISOString();
-        }
+function generateUUIDv7() {
+    const now = Date.now(); // ミリ秒単位のタイムスタンプ
+    const hexTimestamp = now.toString(16).padStart(12, '0'); // タイムスタンプを16進数に変換
+    const randomPart = 'xxxxxxxxxxxx'.replace(/[x]/g, () => (Math.random() * 16 | 0).toString(16));
+    
+    return `${hexTimestamp.slice(0, 8)}-${hexTimestamp.slice(8, 12)}-7${randomPart.slice(0, 3)}-${(Math.random() * 16 | 8).toString(16)}${randomPart.slice(3, 6)}-${randomPart.slice(6)}`;
+}
+function uuidv7ToISO8601(uuidv7) {
+    const timestampHex = uuidv7.slice(0, 8) + uuidv7.slice(9, 13); // タイムスタンプ部分を抽出
+    const timestamp = parseInt(timestampHex, 16); // 16進数を数値に変換
+    return new Date(timestamp).toISOString(); // ISO 8601形式の日付に変換
+}
 
         function generateRandomString(length, chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') {
             let result = '';
