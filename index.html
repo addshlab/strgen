@@ -82,6 +82,10 @@
     <div id="notification"></div>
 </div>
     <script>
+        const symbols = '^$*.[]{}()?!@#%&:;_~';
+        const numbers = '1234567890';
+        const alphabets = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    
         function getJapaneseEraDate() {
             const now = new Date();
             const options = { year: 'numeric', month: 'long', day: 'numeric', era: 'long' };
@@ -119,7 +123,7 @@
             return date.toISOString();
         }
 
-        function generateRandomString(length, chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') {
+        function generateRandomString(length, chars = symbols + numbers + alphabets) {
             let result = '';
             for (let i = 0; i < length; i++) {
                 result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -169,9 +173,9 @@
             document.getElementById('random12_symbols_numbers_alphabets').textContent = generateRandomString(12);
             document.getElementById('random16_symbols_numbers_alphabets').textContent = generateRandomString(16);
             document.getElementById('random32_symbols_numbers_alphabets').textContent = generateRandomString(32);
-            document.getElementById('random12_numbers_alphabets').textContent = generateRandomString(12);
-            document.getElementById('random16_numbers_alphabets').textContent = generateRandomString(16);
-            document.getElementById('random32_numbers_alphabets').textContent = generateRandomString(32);
+            document.getElementById('random12_numbers_alphabets').textContent = generateRandomString(12, numbers + alphabets);
+            document.getElementById('random16_numbers_alphabets').textContent = generateRandomString(16, numbers + alphabets);
+            document.getElementById('random32_numbers_alphabets').textContent = generateRandomString(32, numbers + alphabets);
             document.getElementById('random12_emojis').textContent = getRandomEmojis(12);
 
             const { localTime, utcTime } = getCurrentTime();
