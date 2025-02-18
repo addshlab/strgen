@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文字列ジェネレータ</title>
+    <title>適当な文字が必要な時に見るページ</title>
     <style>
         body {
             margin: 0;
@@ -39,6 +39,13 @@
             border-radius: 5px;
             z-index: 1000;
         }
+        .note {
+            background: #EEE;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 3px;
+            margin-bottom: 15px;
+        }
         strong {
             font-family: monospace;
         }
@@ -57,28 +64,33 @@
 </head>
 <body>
 <div id="app">
-    <h1>文字列ジェネレータ</h1>
-    <p>ここで生成される文字列はお使いのブラウザで生成されています。これらの値がサーバーに残ったり、どこかに送信されることはありません。</p>
-    <button id="regenerateButton">Generate</button>
-    <h2>Datetime</h2>
-    <p>Local: <span id="localTime"></span> <button class="copy-button" data-target="localTime">copy</button></p>
-    <p>UTC: <span id="utcTime"></span> <button class="copy-button" data-target="utcTime">copy</button></p>
-        <p>日本: <span id="japanTime"></span> <button class="copy-button" data-target="japanTime">copy</button></p>
+    <h1>適当な文字が必要な時に見るページ</h1>
+    <p class="note">ここで生成される文字列はお使いのブラウザで生成されています。これらの値がサーバーに残ったり、どこかに送信されることはありません。</p>
+    <button id="regenerateButton">再生成</button>
+    <h2>日付</h2>
+    <p>あなたのコンピュータの時間: <span id="localTime"></span> <button class="copy-button" data-target="localTime">コピー</button></p>
+    <p>協定世界時: <span id="utcTime"></span> <button class="copy-button" data-target="utcTime">コピー</button></p>
+        <p>和暦: <span id="japanTime"></span> <button class="copy-button" data-target="japanTime">コピー</button></p>
     <h2>UUID</h2>
-    <p>UUIDv4: <span id="uuidv4"></span> <button class="copy-button" data-target="uuidv4">copy</button></p>
-    <p>UUIDv7: <span id="uuidv7"></span> <button class="copy-button" data-target="uuidv7">copy</button> <span id="uuidv7_validate"></span></p>
-    <h2>Symbol+Number+Alphabet</h2>
-    <p>12char: <span id="random12_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random12_symbols_numbers_alphabets">copy</button></p>
-    <p>16char: <span id="random16_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random16_symbols_numbers_alphabets">copy</button></p>
-    <p>32char: <span id="random32_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random32_symbols_numbers_alphabets">copy</button></p>
-    <h2>Number+Alphabet</h2>
-    <p>12char: <span id="random12_numbers_alphabets"></span> <button class="copy-button" data-target="random12_numbers_alphabets">copy</button></p>
-    <p>16char: <span id="random16_numbers_alphabets"></span> <button class="copy-button" data-target="random16_numbers_alphabets">copy</button></p>
-    <p>32char: <span id="random32_numbers_alphabets"></span> <button class="copy-button" data-target="random32_numbers_alphabets">copy</button></p>
-    <h2>Emoji</h2>
-    <p>12char: <span id="random12_emojis"></span> <button class="copy-button" data-target="random12_emojis">copy</button></p>
+    <p class="note">UUIDv4は数学的に他の値と重複することがないとされる文字列です。UUIDv7はv4の特徴を持ちつつ、タイムスタンプの情報を含みます。</p>
+    <p>UUIDv4: <span id="uuidv4"></span> <button class="copy-button" data-target="uuidv4">コピー</button></p>
+    <p>UUIDv7: <span id="uuidv7"></span> <button class="copy-button" data-target="uuidv7">コピー</button> タイムスタンプ: <span id="uuidv7_validate"></span></p>
+
+    <h2>記号・数字・アルファベット</h2>
+    <p class="note">パスワードとして用いる場合、生成される文字列は暗号学的な強度を保証しませんが、qwertyやdragon1234を使うよりも遥かによいはずです。</p>
+    <p>12文字: <span id="random12_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random12_symbols_numbers_alphabets">コピー</button></p>
+    <p>16文字: <span id="random16_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random16_symbols_numbers_alphabets">コピー</button></p>
+    <p>32文字: <span id="random32_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random32_symbols_numbers_alphabets">コピー</button></p>
+    <p>64文字: <span id="random64_symbols_numbers_alphabets"></span> <button class="copy-button" data-target="random64_symbols_numbers_alphabets">コピー</button></p>
+    <h2>数字・アルファベット</h2>
+    <p>12文字: <span id="random12_numbers_alphabets"></span> <button class="copy-button" data-target="random12_numbers_alphabets">コピー</button></p>
+    <p>1文字: <span id="random16_numbers_alphabets"></span> <button class="copy-button" data-target="random16_numbers_alphabets">コピー</button></p>
+    <p>32文字: <span id="random32_numbers_alphabets"></span> <button class="copy-button" data-target="random32_numbers_alphabets">コピー</button></p>
+    <p>64文字: <span id="random64_numbers_alphabets"></span> <button class="copy-button" data-target="random64_numbers_alphabets">コピー</button></p>
+    <h2>絵文字</h2>
+    <p>12char: <span id="random12_emojis"></span> <button class="copy-button" data-target="random12_emojis">コピー</button></p>
     <h2>Front Matter</h2>
-    <pre id="generatedMetadata"></pre> <button class="copy-button" data-target="generatedMetadata">copy</button>
+    <pre id="generatedMetadata"></pre> <button class="copy-button" data-target="generatedMetadata">コピー</button>
     <div id="notification"></div>
 </div>
     <script>
@@ -173,9 +185,11 @@
             document.getElementById('random12_symbols_numbers_alphabets').textContent = generateRandomString(12);
             document.getElementById('random16_symbols_numbers_alphabets').textContent = generateRandomString(16);
             document.getElementById('random32_symbols_numbers_alphabets').textContent = generateRandomString(32);
+            document.getElementById('random64_symbols_numbers_alphabets').textContent = generateRandomString(64);
             document.getElementById('random12_numbers_alphabets').textContent = generateRandomString(12, numbers + alphabets);
             document.getElementById('random16_numbers_alphabets').textContent = generateRandomString(16, numbers + alphabets);
             document.getElementById('random32_numbers_alphabets').textContent = generateRandomString(32, numbers + alphabets);
+            document.getElementById('random64_numbers_alphabets').textContent = generateRandomString(64, numbers + alphabets);
             document.getElementById('random12_emojis').textContent = getRandomEmojis(12);
 
             const { localTime, utcTime } = getCurrentTime();
